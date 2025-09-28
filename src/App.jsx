@@ -5,7 +5,7 @@ const App = () => {
     <div className='flex justify-center items-center h-screen flex-col '>
       <h1 className='text-2xl font-bold'>Hello my Team Local Heroes </h1>
       <p>Welcome to our React application!</p>
-      <p>let us build </p>
+      <p>let us build our website</p>
     </div>
   )
 }
