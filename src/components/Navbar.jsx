@@ -6,7 +6,7 @@ import Herosection from './HeroSection';
 
 function Navbar() {
   return (
-    <header className='bg-white shadow-sm'>
+    <header className='bg-white shadow-sm sm:px-10' >
       <div className='container mx-auto py-4 px-4'>
         <nav className="flex items-center justify-between">
           <div className='gap-6 ml-10'>
@@ -19,17 +19,17 @@ function Navbar() {
 
           </Link>
           </div>
-          <div className="flex py-2 px-3 justify-between gap-6">
-            <div className='bg-amber-100 rounded-md shadow'>
+          <div className="grid grid-cols-2 gap-6 py-2 px-2">
+            <div className='bg-amber-100 rounded-md mr-2'>
             <Link
-              to="/Herosection" className="flex items-center gap-0 text-red-300 text-2xl px-2 py-2 "
+              to="/Herosection" className="flex items-center gap-1 text-red-300 text-2xl px-1 py-1 rounded-md "
 
             >
-              <Users size={20}/>
+              <Users size={18}/>
               <span>Heroes</span>
             </Link>
             </div>
-            <div>
+            <div className='flex'>
             <Link to="/" className="flex items-center gap-0 text-black  text-2xl">
             <Plus size={20} />
              <span>Nominate</span> 
