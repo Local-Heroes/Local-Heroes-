@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 // import Register from "./pages/Register";
-import Herosection from "./components/HeroSection";
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Heroes from "./pages/Heroes";
@@ -16,8 +16,8 @@ const App = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             {/* <Route path="/register" element={<Register />} /> */}
-            <Route path="/Herosection" element={<Herosection/>} />
-            <Route path="/heroes" element={<Heroes/>} />
+       
+            <Route path="/" element={<Heroes/>} />
             <Route path="/nominate" element={<Nominate/>} />
           </Routes>
       </main>
