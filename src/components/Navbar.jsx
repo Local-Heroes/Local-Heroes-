@@ -25,7 +25,7 @@ function Navbar() {
          
           <div className="hidden md:flex flex-1 justify-center items-center gap-8">
             <Link
-              to="/heroes"
+              to="/"
               className="flex items-center gap-1 text-orange-500 text-lg  
                hover:bg-orange-200 transition rounded-md"
             >
@@ -67,7 +67,7 @@ function Navbar() {
         {isOpen && (
           <div className="flex flex-col gap-4 mt-4 md:hidden  items-center ">
             <Link
-              to="/heroes"
+              to="/"
               className="flex items-center gap-1 rounded-md   hover:bg-orange-200 transition"
             >
               <Users size={18} />
