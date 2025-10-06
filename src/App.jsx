@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Heroes from "./pages/Heroes";
-import Nominate from "./pages/Nominate";
+import Nominate from "./pages/NominationForm";
 
 const App = () => {
   return (
