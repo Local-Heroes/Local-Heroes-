@@ -41,9 +41,11 @@ function Navbar() {
               <Plus size={20} />
               <span>Nominate</span>
             </Link>
+           
           </div>
 
         
+          
           <div className="hidden md:flex">
             <Link
               to="/login"
@@ -81,7 +83,7 @@ function Navbar() {
               <Plus size={20} />
               <span>Nominate</span>
             </Link>
-
+            
 
             <Link
               to="/login"
@@ -90,7 +92,7 @@ function Navbar() {
               <LogIn size={18} />
               <span>Sign In</span>
             </Link>
-
+           
 
           </div>
         )}
