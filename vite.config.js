@@ -4,7 +4,15 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react()
-  , tailwindcss()],
+  plugins: [react(),tailwindcss()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://localheroes.vercel.app',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
+      }
+    }
+  }
 })
