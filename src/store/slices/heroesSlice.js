@@ -24,7 +24,9 @@ const initialState = {
     currentPage: 1,
     itemsPerPage: 6,
     totalItems: 0
-  }
+  },
+  currentUser: null,
+  userHeroes: [] 
 };
 
 // Async thunks
@@ -37,7 +39,7 @@ export const addNewHero = createAsyncThunk(
   'heroes/addNewHero',
   async (heroData, { rejectWithValue, }) => {
     try {
-    const token = localStorage.getItem('token') ;
+      const token = localStorage.getItem('token');
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -55,9 +57,9 @@ export const addNewHero = createAsyncThunk(
 
 export const deleteHero = createAsyncThunk(
   'heroes/deleteHero',
-  async (heroId, { rejectWithValue,  }) => {
+  async (heroId, { rejectWithValue, }) => {
     try {
- const token = localStorage.getItem('token') ;
+      const token = localStorage.getItem('token');
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -110,7 +112,7 @@ export const thankHero = createAsyncThunk(
   'heroes/thankHero',
   async (heroId, { rejectWithValue, }) => {
     try {
-const token = localStorage.getItem('token') ;
+      const token = localStorage.getItem('token');
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -130,7 +132,7 @@ export const addComment = createAsyncThunk(
   'heroes/addComment',
   async ({ heroId, text }, { rejectWithValue, }) => {
     try {
-     const token = localStorage.getItem('token') ;
+      const token = localStorage.getItem('token');
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -155,7 +157,7 @@ export const deleteComment = createAsyncThunk(
   'heroes/deleteComment',
   async ({ heroId, commentId }, { rejectWithValue, }) => {
     try {
-      const token = localStorage.getItem('token') ;
+      const token = localStorage.getItem('token');
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -179,6 +181,28 @@ export const fetchHeroComments = createAsyncThunk(
       return { heroId, comments: response.data };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Fetch comments failed');
+    }
+  }
+);
+
+
+
+// Get current user with their heroes
+export const fetchCurrentUser = createAsyncThunk(
+  'heroes/fetchCurrentUser',
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const token = localStorage.getItem('token') || getState().auth?.token;
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      };
+
+      const response = await axios.get(`${BASE_URL}/users/me`, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch user data');
     }
   }
 );
@@ -222,12 +246,12 @@ const heroesSlice = createSlice({
     },
     filterHeroes: (state) => {
       const { search, tags, location, impactArea } = state.filters;
-      
+
       let filtered = state.heroes;
 
       if (search) {
         const searchLower = search.toLowerCase();
-        filtered = filtered.filter(hero => 
+        filtered = filtered.filter(hero =>
           hero.full_name.toLowerCase().includes(searchLower) ||
           hero.story.toLowerCase().includes(searchLower) ||
           hero.location.toLowerCase().includes(searchLower) ||
@@ -276,21 +300,21 @@ const heroesSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
-      
+
       // Add new hero
       .addCase(addNewHero.fulfilled, (state, action) => {
         state.heroes.push(action.payload);
         state.filteredHeroes.push(action.payload);
         state.pagination.totalItems += 1;
       })
-      
+
       // Delete hero
       .addCase(deleteHero.fulfilled, (state, action) => {
         state.heroes = state.heroes.filter(hero => hero.id !== action.payload);
         state.filteredHeroes = state.filteredHeroes.filter(hero => hero.id !== action.payload);
         state.pagination.totalItems -= 1;
       })
-      
+
       // Fetch hero by ID - ADD THIS CASE
       .addCase(fetchHeroById.pending, (state) => {
         state.status = 'loading';
@@ -304,7 +328,7 @@ const heroesSlice = createSlice({
         state.error = action.payload;
         state.currentHero = null;
       })
-      
+
       // Nomination submission
       .addCase(submitNomination.pending, (state) => {
         state.status = 'loading';
@@ -317,26 +341,26 @@ const heroesSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       })
-      
+
       // Thank hero
       .addCase(thankHero.fulfilled, (state, action) => {
         const { heroId } = action.payload;
         console.log("Thanked hero ID:", heroId);
         console.log("Current Hero before update:", state.currentHero);
-        
+
         // Update current hero if it's the one being thanked
         if (state.currentHero && state.currentHero._id === heroId) {
           state.currentHero.thanks_count = (state.currentHero.thanks_count || 0) + 1;
           state.currentHero.user_has_thanked = true;
         }
-        
+
         // Update hero in heroes list
         const existingHero = state.heroes.find(hero => hero._id === heroId);
         if (existingHero) {
           existingHero.thanks_count = (existingHero.thanks_count || 0) + 1;
           existingHero.user_has_thanked = true;
         }
-        
+
         // Update hero in filtered list
         const filteredHero = state.filteredHeroes.find(hero => hero._id === heroId);
         if (filteredHero) {
@@ -344,11 +368,11 @@ const heroesSlice = createSlice({
           filteredHero.user_has_thanked = true;
         }
       })
-      
+
       // Add comment
       .addCase(addComment.fulfilled, (state, action) => {
         const { heroId, comment } = action.payload;
-        
+
         // Update current hero
         if (state.currentHero && state.currentHero._id === heroId) {
           if (!state.currentHero.comments) {
@@ -356,7 +380,7 @@ const heroesSlice = createSlice({
           }
           state.currentHero.comments.push(comment);
         }
-        
+
         // Update hero in heroes list
         const existingHero = state.heroes.find(hero => hero._id === heroId);
         if (existingHero) {
@@ -365,7 +389,7 @@ const heroesSlice = createSlice({
           }
           existingHero.comments.push(comment);
         }
-        
+
         // Update hero in filtered list
         const filteredHero = state.filteredHeroes.find(hero => hero._id === heroId);
         if (filteredHero) {
@@ -375,62 +399,80 @@ const heroesSlice = createSlice({
           filteredHero.comments.push(comment);
         }
       })
-      
+
       // Delete comment
       .addCase(deleteComment.fulfilled, (state, action) => {
         const { heroId, commentId } = action.payload;
-        
+
         // Update current hero
         if (state.currentHero && state.currentHero._id === heroId && state.currentHero.comments) {
           state.currentHero.comments = state.currentHero.comments.filter(c => c.id !== commentId);
         }
-        
+
         // Update hero in heroes list
         const existingHero = state.heroes.find(hero => hero._id === heroId);
         if (existingHero && existingHero.comments) {
           existingHero.comments = existingHero.comments.filter(c => c.id !== commentId);
         }
-        
+
         // Update hero in filtered list
         const filteredHero = state.filteredHeroes.find(hero => hero._id === heroId);
         if (filteredHero && filteredHero.comments) {
           filteredHero.comments = filteredHero.comments.filter(c => c.id !== commentId);
         }
       })
-      
+
       // Fetch hero comments
       .addCase(fetchHeroComments.fulfilled, (state, action) => {
         const { heroId, comments } = action.payload;
-        
+
         // Update current hero
         if (state.currentHero && state.currentHero._id === heroId) {
           state.currentHero.comments = comments;
         }
-        
+
         // Update hero in heroes list
         const existingHero = state.heroes.find(hero => hero._id === heroId);
         if (existingHero) {
           existingHero.comments = comments;
         }
-        
+
         // Update hero in filtered list
         const filteredHero = state.filteredHeroes.find(hero => hero._id === heroId);
         if (filteredHero) {
           filteredHero.comments = comments;
         }
       });
+
+    // Add these cases to your extraReducers in heroesSlice.js
+    builder.addCase(fetchCurrentUser.pending, (state) => {
+      state.status = 'loading';
+    })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentUser = {
+          id: action.payload.id,
+          name: action.payload.name,
+          email: action.payload.email
+        };
+        state.userHeroes = action.payload.heroes || [];
+      })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
   }
 });
 
-export const { 
-  saveStep1Data, 
-  saveStep2Data, 
-  saveStep3Data, 
+export const {
+  saveStep1Data,
+  saveStep2Data,
+  saveStep3Data,
   clearNominationData,
   resetSubmissionStatus,
-  setFilters, 
-  clearFilters, 
-  setCurrentPage, 
+  setFilters,
+  clearFilters,
+  setCurrentPage,
   filterHeroes,
   clearCurrentHero // EXPORT THIS ACTION
 } = heroesSlice.actions;

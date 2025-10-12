@@ -115,7 +115,7 @@ const ViewCard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto md:px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link 
           to="/" 
@@ -162,9 +162,10 @@ const ViewCard = () => {
           )}
 
           {/* Content */}
-          <div className="p-8">
+          <div className="md:p-8 p-4">
             {/* Stats Bar */}
-            <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
+            <div className="md:flex items-center justify-between mb-8 pb-6 border-b border-gray-200 
+             space-y-4 md:space-y-0">
               <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
                   <Heart className="w-5 h-5 text-red-500" />
@@ -246,7 +247,7 @@ const ViewCard = () => {
             {/* Comments Section */}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="md:text-2xl text-xl font-bold text-gray-900">
                   Community Appreciation ({currentHero.comments?.length || 0})
                 </h2>
               </div>

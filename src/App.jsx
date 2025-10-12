@@ -9,6 +9,7 @@ import ViewCard from "./pages/ViewCard";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { checkAuthStatus } from "./store/slices/AuthSlice";
+import UserProfile from "./components/Auth/UserProfile";
 
 
 const App = () => {
@@ -26,8 +27,10 @@ const App = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<UserProfile />} />
             <Route path="/" element={<Heroes/>} />
             <Route path="/nominate" element={<Nominate/>} />
+
             <Route path="/hero/:id" element={<ViewCard/>} />
           </Routes>
       </main>

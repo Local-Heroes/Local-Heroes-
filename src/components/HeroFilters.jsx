@@ -11,7 +11,7 @@ const HeroFilters = () => {
 
   // Extract unique locations from heroes
   const allLocations = [...new Set(heroes.map(hero => hero.location))];
-  const popularTags = ['software engineer', 'Youth Development', 'Social Services', 'Education', 'Healthcare'];
+  const popularTags = [...new Set(heroes.flatMap(hero => hero.tags))].slice(0, 7); 
 
   const handleSearchChange = (value) => {
     dispatch(setFilters({ search: value }));

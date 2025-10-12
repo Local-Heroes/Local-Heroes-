@@ -76,7 +76,11 @@ function Navbar() {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center bg-gray-50 rounded-full px-3 py-1">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold uppercase">
+                    
+                    <Link className="cursor-pointer" to="/profile">
                     {user?.name?.charAt(0) || "U"}
+                    </Link>
+
                   </div>
                   <span className="ml-2 text-gray-700 font-medium">
                     {user?.name || "User"}

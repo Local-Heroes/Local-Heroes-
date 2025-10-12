@@ -1,7 +1,17 @@
 import React from "react";
 import { Star, Users, Heart,Sparkles } from "lucide-react";
+import { useDispatch , useSelector} from "react-redux";
+import { useEffect } from "react";
+import { fetchCurrentUser } from "../store/slices/heroesSlice";
 
 function Herosection() {
+    const dispatch = useDispatch();
+    const {heroes} = useSelector((state) => state.heroes);
+
+     useEffect(() => {
+        dispatch(fetchCurrentUser());
+      }, [dispatch]);
+
     return (
         <div className="flex flex-col items-center justify-center gap-4 py-6
          px-4 text-center sm:px-20">
@@ -34,7 +44,7 @@ function Herosection() {
                 <div className="p-4 rounded-xl  text-center shadow">
                     <div className="flex items-center justify-center gap-2">
                         <Users size={28} className="bg-blue-600 rounded-md shadow text-white p-1" />
-                        <p className="font-bold text-xl">6</p>
+                        <p className="font-bold text-xl">{heroes.length}</p>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">Heroes Celebrated</p>
                 </div>
@@ -43,7 +53,9 @@ function Herosection() {
                 <div className="p-4 rounded-xl  text-center shadow">
                     <div className="flex items-center justify-center gap-2 ">
                         <Heart size={28} className="bg-red-500 rounded-md shadow text-white p-1" />
-                        <p className="font-bold text-xl">745</p>
+                        <p className="font-bold text-xl">  
+                              {heroes.reduce((total, hero) => total + (hero.thanks_count || 0), 0)}
+                        </p>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">Thanks Given</p>
                 </div>
