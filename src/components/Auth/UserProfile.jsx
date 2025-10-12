@@ -98,13 +98,7 @@ const UserProfile = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">My Profile</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Manage your hero nominations and track their impact in the community
-          </p>
-        </div>
+    
 
         {/* User Info Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">

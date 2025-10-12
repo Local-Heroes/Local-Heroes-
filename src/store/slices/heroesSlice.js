@@ -164,7 +164,7 @@ export const deleteComment = createAsyncThunk(
         }
       };
 
-      await axios.delete(`${BASE_URL}/heroes/${heroId}/comments/${commentId}`, config);
+      await axios.post(`${BASE_URL}/heroes/${heroId}/comments/${commentId}`, config);
       return { heroId, commentId };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Delete comment failed');

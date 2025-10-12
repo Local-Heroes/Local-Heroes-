@@ -79,13 +79,15 @@ const ViewCard = () => {
     }
   };
 
-  const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+//  const formatDate = (timestamp) => {
+//   // Hubi in timestamp uu integer noqdo
+//   const date = new Date(Math.floor(timestamp));
+//   return date.toLocaleDateString('en-US', {
+//     year: 'numeric',
+//     month: 'long',
+//     day: 'numeric',
+//   });
+// };
 
   if (status === 'loading') {
     return (
@@ -230,7 +232,11 @@ const ViewCard = () => {
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-gray-400" />
                   <span className="text-gray-600">
-                    Nominated on {formatDate(currentHero.created_at)}
+                    Nominated on {new Date(currentHero._creationTime).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </span>
                 </div>
                 {currentHero.created_by && (
@@ -303,7 +309,8 @@ const ViewCard = () => {
                             </p>
                             <p className="text-sm text-gray-500 flex items-center">
                               <Calendar className="w-3 h-3 mr-1" />
-                              {formatDate(comment.created_at)}
+                           {new Date(Math.floor(comment.created_at * 1000)).toLocaleDateString()}
+
                             </p>
                           </div>
                         </div>
