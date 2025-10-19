@@ -5,28 +5,26 @@ import { fetchHeroes, setCurrentPage, fetchUserThanks } from '../store/slices/he
 import HeroFilters from './HeroFilters';
 import HeroCard from './HeroCard';
 import { clearFilters } from '../store/slices/heroesSlice';
-import { useRef } from 'react';
+
 
 
 const HeroFeed = () => {
   const dispatch = useDispatch();
   const { filteredHeroes, status, pagination, filters } = useSelector(state => state.heroes);
-   const { user } = useSelector(state => state.auth);
+  //  const { user } = useSelector(state => state.auth);
   const { userThanks } = useSelector(state => state.heroes);
  
 
-   const fetchedRef = useRef(false);
-  
-  useEffect(() => {
-    if (user?._id && !fetchedRef.current) {
-      dispatch(fetchUserThanks(user._id));
-      fetchedRef.current = true;
-    }
-  }, [user?._id, dispatch]);
+ 
 
   useEffect(() => {
-    dispatch(fetchHeroes());
-  }, [dispatch]);
+   
+      dispatch(fetchHeroes());
+      dispatch(fetchUserThanks()); 
+   
+  }, [ dispatch]);;
+
+
 
   // Calculate paginated heroes
   const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;

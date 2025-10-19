@@ -212,21 +212,17 @@ export const fetchCurrentUser = createAsyncThunk(
 // fetch user Thanks
 export const fetchUserThanks = createAsyncThunk(
   'heroes/fetchUserThanks',
-  async (userId, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token') || getState().auth?.token;
-      const config = {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/users/me/thanks', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      };
-
-      // Adjust the endpoint based on your actual API
-      const response = await axios.get(`${BASE_URL}/users/${userId}/thanks`, config);
-      
-      return response.data; // This should be the array you showed in the console
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data; 
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch user thanks');
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -488,19 +484,18 @@ const heroesSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch user thanks
-      .addCase(fetchUserThanks.pending, (state) => {
+          builder.addCase(fetchUserThanks.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(fetchUserThanks.fulfilled, (state, action) => {
         state.status = 'succeeded';
-         state.userThanks = action.payload
-        
+        state.userThanks = action.payload;
       })
       .addCase(fetchUserThanks.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });
+  
   }
 });
 

@@ -10,8 +10,7 @@ function Navbar() {
   const { isAuthenticated, user ,token} = useSelector((state) => state.auth);
  
 
-  console.log(user)
-
+  
   const handleLogout = async() => {
     try {
     const response = await fetch("/api/auth/logout", {
@@ -133,7 +132,7 @@ function Navbar() {
             </Link>
 
             <Link
-              to="/nominate"
+             to={`${isAuthenticated ? "/nominate" : "/login"}`}
               className="flex items-center gap-1 hover:bg-orange-200 rounded-md transition px-2 py-1"
               onClick={() => setIsOpen(false)}
             >
