@@ -1,47 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { thankHero } from '../store/slices/heroesSlice';
+import { thankHero} from '../store/slices/heroesSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import { LocationEdit, Heart } from "lucide-react"
 import { Link } from 'react-router-dom';
 
-const HeroCard = ({ hero }) => {
+
+const HeroCard = ({ hero , userThanks }) => {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth);
   const [isThanking, setIsThanking] = useState(false);
-  const [userHasThanked, setUserHasThanked] = useState("");
 
 
 
-useEffect(() => {
-  if (userHasThanked) {
-    console.log("User has thanked (updated):", userHasThanked);
-  }
-}, [userHasThanked]);
 
+  // ✅ Check if user has thanked this hero
+  const hasThanked = userThanks?.some(
+    (thank) => thank.hero_id === hero?._id
+  );
+
+  
 
 
   const [showFullStory, setShowFullStory] = useState(false);
 
-  const handleThank = async () => {
-    if (user && hero ) {
-      setIsThanking(true);
-      try {
-      const response =  await dispatch(thankHero(hero._id)).unwrap();
-     const id = response.data.userId;
-      setUserHasThanked(id);
-      console.log('User has thanked:', userHasThanked);
-    
-      } catch (error) {
-        console.error('Thank failed:', error.error);
-        toast.error(error.error || "Thank failed");
-      } finally {
-        setIsThanking(false);
-      }
-    }else{
-      alert("Please login to thank the hero")
+const handleThank = async () => {
+  if (user && !hasThanked) {
+    setIsThanking(true);
+    try {
+      await dispatch(thankHero(hero?._id)).unwrap();
+      toast.success("Thank you for showing appreciation!");
+    } catch (error) {
+      console.error('Thank failed:', error);
+      toast.error(error?.message || "Error thanking hero");
+    } finally {
+      setIsThanking(false);
     }
-  };
+  } else if (!user) {
+    toast.info("Please log in to thank heroes");
+  }
+};
+
 
   const shortDescription = hero.story.length > 100 && !showFullStory
     ? `${hero.story.substring(0, 100)}...`
@@ -53,7 +52,7 @@ useEffect(() => {
   // Use thanks_count instead of thanks to match API
   const thanksCount = hero.thanks_count || hero.thanks || 0;
 
-  const isThankedByUser = userHasThanked === user?._id;
+
 
   return (
     <div className="bg-white rounded-xl shadow hover:shadow-lg transition-shadow overflow-hidden flex flex-col">
@@ -128,25 +127,19 @@ useEffect(() => {
         <div className="flex items-center justify-between mt-auto pt-2">
 
           {/* thank */}
-      <button
-  onClick={handleThank}
-    disabled={!user || isThanking || isThankedByUser}
-  className={`flex items-center space-x-2 px-3 py-1 rounded-full font-semibold transition-all 
-    ${userHasThanked === user?._id
-      ? 'bg-green-100 text-green-700 cursor-default'
-      : 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl transform hover:scale-105'
-    } 
-    disabled:opacity-50 disabled:cursor-not-allowed`}
->
-  <Heart
-    className="w-5 h-5"
-    fill={isThankedByUser? 'currentColor' : 'none'}
-  />
-  <span>
-    {isThanking ? 'Thanking...' :
-     isThankedByUser ? 'Thanked!' : 'Thank Hero'}
-  </span>
-</button>
+          <button
+            onClick={handleThank}
+            disabled={!user || hasThanked }
+            className={`flex items-center space-x-2 px-4 py-2 rounded-full font-semibold transition-all ${hasThanked
+                ? 'bg-green-100 text-green-700 cursor-default'
+                : 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl transform hover:scale-105'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            <Heart className="w-4 h-4" fill={hasThanked ? 'currentColor' : 'none'} />
+            <span className="text-sm">
+              {isThanking ? 'Thanking...' : hasThanked ? 'Thanked!' : 'Thank'}
+            </span>
+          </button>
 
 
 

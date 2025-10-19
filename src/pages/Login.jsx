@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Lock, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch, } from "react-redux";
@@ -9,11 +9,13 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../store/slices/AuthSlice";
 import { ToastContainer, toast } from 'react-toastify';
 
+
 const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = React.useState(null);
+  const [isSubminting, setIsSubmiting] = useState(false)
 
 
 
@@ -22,6 +24,7 @@ const Login = () => {
   });
 
  const onSubmit = async (data) => {
+   setIsSubmiting(true)
   try {
     const result = await dispatch(loginUser(data)).unwrap();
     localStorage.setItem("token", result.token);
@@ -35,6 +38,8 @@ const Login = () => {
   } catch (error) {
      toast.error(error.error || "Login failed");
     setError(error.error || "Login failed");
+  }finally{
+    setIsSubmiting(false)
   }
 };
 
@@ -131,10 +136,10 @@ const Login = () => {
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500
+            className={`w-full ${isSubminting ? "bg-gradient-to-r from-orange-100 to-red-200" : "bg-gradient-to-r from-orange-500 to-red-500" }
              text-white py-2 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer"
-          >
-            Sign In
+            `}>
+            {isSubminting? "signing": "sign in"}
           </button>
         </form>
 

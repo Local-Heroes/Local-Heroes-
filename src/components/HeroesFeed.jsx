@@ -1,15 +1,28 @@
 // components/HeroFeed.jsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchHeroes, setCurrentPage } from '../store/slices/heroesSlice';
+import { fetchHeroes, setCurrentPage, fetchUserThanks } from '../store/slices/heroesSlice';
 import HeroFilters from './HeroFilters';
 import HeroCard from './HeroCard';
 import { clearFilters } from '../store/slices/heroesSlice';
+import { useRef } from 'react';
 
 
 const HeroFeed = () => {
   const dispatch = useDispatch();
   const { filteredHeroes, status, pagination, filters } = useSelector(state => state.heroes);
+   const { user } = useSelector(state => state.auth);
+  const { userThanks } = useSelector(state => state.heroes);
+ 
+
+   const fetchedRef = useRef(false);
+  
+  useEffect(() => {
+    if (user?._id && !fetchedRef.current) {
+      dispatch(fetchUserThanks(user._id));
+      fetchedRef.current = true;
+    }
+  }, [user?._id, dispatch]);
 
   useEffect(() => {
     dispatch(fetchHeroes());
@@ -68,7 +81,7 @@ const HeroFeed = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {paginatedHeroes.map(hero => (
-                <HeroCard key={hero._id} hero={hero} />
+                <HeroCard key={hero._id} hero={hero} userThanks={userThanks} />
               ))}
             </div>
 

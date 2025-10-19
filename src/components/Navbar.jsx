@@ -10,7 +10,7 @@ function Navbar() {
   const { isAuthenticated, user ,token} = useSelector((state) => state.auth);
  
 
-
+  console.log(user)
 
   const handleLogout = async() => {
     try {
@@ -89,7 +89,7 @@ function Navbar() {
 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center text-gray-600 hover:text-red-500 transition"
+                  className="flex items-center text-gray-600 hover:text-red-500 transition cursor-pointer"
                 >
                   <LogOut className="w-5 h-5 mr-1" />
                   Logout
@@ -122,7 +122,7 @@ function Navbar() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="flex flex-col gap-4 mt-4 md:hidden items-center">
+          <div className="flex flex-col gap-4 mt-4 md:hidden p-4 ">
             <Link
               to="/"
               className="flex items-center gap-1 rounded-md hover:bg-orange-200 transition px-2 py-1"
@@ -142,13 +142,17 @@ function Navbar() {
             </Link>
 
             {isAuthenticated ? (
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center bg-gray-50 rounded-full px-3 py-1">
+              <div className="flex flex-col gap-2">
+                  <div className="flex items-center bg-gray-50 rounded-full  py-1">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold uppercase">
-                    {user?.username?.charAt(0) || "U"}
+                    
+                    <Link className="cursor-pointer" to="/profile">
+                    {user?.name?.charAt(0) || "U"}
+                    </Link>
+
                   </div>
                   <span className="ml-2 text-gray-700 font-medium">
-                    {user?.username || "User"}
+                    {user?.name || "User"}
                   </span>
                 </div>
 
@@ -157,7 +161,7 @@ function Navbar() {
                     handleLogout();
                     setIsOpen(false);
                   }}
-                  className="flex items-center text-gray-600 hover:text-red-500 transition"
+                  className="flex items-center text-gray-600 hover:text-red-500 transition cursor-pointer"
                 >
                   <LogOut className="w-5 h-5 mr-1" />
                   Logout

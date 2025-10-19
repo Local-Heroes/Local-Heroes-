@@ -26,7 +26,9 @@ const initialState = {
     totalItems: 0
   },
   currentUser: null,
-  userHeroes: [] 
+  userHeroes: [],
+
+  userThanks: [], // Add this line
 };
 
 // Async thunks
@@ -164,7 +166,7 @@ export const deleteComment = createAsyncThunk(
         }
       };
 
-      await axios.post(`${BASE_URL}/heroes/${heroId}/comments/${commentId}`, config);
+      await axios.delete(`${BASE_URL}/heroes/${heroId}/comments/${commentId}`, config);
       return { heroId, commentId };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Delete comment failed');
@@ -206,6 +208,29 @@ export const fetchCurrentUser = createAsyncThunk(
     }
   }
 );
+
+// fetch user Thanks
+export const fetchUserThanks = createAsyncThunk(
+  'heroes/fetchUserThanks',
+  async (userId, { rejectWithValue, getState }) => {
+    try {
+      const token = localStorage.getItem('token') || getState().auth?.token;
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      };
+
+      // Adjust the endpoint based on your actual API
+      const response = await axios.get(`${BASE_URL}/users/${userId}/thanks`, config);
+      
+      return response.data; // This should be the array you showed in the console
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch user thanks');
+    }
+  }
+);
+
 
 // Slice
 const heroesSlice = createSlice({
@@ -281,7 +306,7 @@ const heroesSlice = createSlice({
       state.pagination.totalItems = filtered.length;
     },
     clearCurrentHero: (state) => {
-      state.currentHero = null; // ADD THIS REDUCER
+      state.currentHero = null; 
     }
   },
   extraReducers: (builder) => {
@@ -342,35 +367,36 @@ const heroesSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Thank hero
-      .addCase(thankHero.fulfilled, (state, action) => {
-        const { heroId } = action.payload;
-        console.log("Thanked hero ID:", heroId);
-        console.log("Current Hero before update:", state.currentHero);
+       .addCase(thankHero.fulfilled, (state, action) => {
+  const { heroId } = action.payload;
 
-        // Update current hero if it's the one being thanked
-        if (state.currentHero && state.currentHero._id === heroId) {
-          state.currentHero.thanks_count = (state.currentHero.thanks_count || 0) + 1;
-          state.currentHero.user_has_thanked = true;
-        }
+  // Update current hero if it's the one being thanked
+  if (state.currentHero && state.currentHero._id === heroId) {
+    state.currentHero.thanks_count = (state.currentHero.thanks_count || 0) + 1;
+    state.currentHero.user_has_thanked = true;
+  }
 
-        // Update hero in heroes list
-        const existingHero = state.heroes.find(hero => hero._id === heroId);
-        if (existingHero) {
-          existingHero.thanks_count = (existingHero.thanks_count || 0) + 1;
-          existingHero.user_has_thanked = true;
-        }
+  // Update hero in heroes list
+  const existingHero = state.heroes.find(hero => hero._id === heroId);
+  if (existingHero) {
+    existingHero.thanks_count = (existingHero.thanks_count || 0) + 1;
+    existingHero.user_has_thanked = true;
+  }
 
-        // Update hero in filtered list
-        const filteredHero = state.filteredHeroes.find(hero => hero._id === heroId);
-        if (filteredHero) {
-          filteredHero.thanks_count = (filteredHero.thanks_count || 0) + 1;
-          filteredHero.user_has_thanked = true;
-        }
-      })
+  // Update hero in filtered list
+  const filteredHero = state.filteredHeroes.find(hero => hero._id === heroId);
+  if (filteredHero) {
+    filteredHero.thanks_count = (filteredHero.thanks_count || 0) + 1;
+  }
+
+  // ✅ Update userThanks array locally so UI reacts immediately
+  if (!state.userThanks.some(t => t.hero_id === heroId)) {
+    state.userThanks.push({ hero_id: heroId });
+  }
+});
 
       // Add comment
-      .addCase(addComment.fulfilled, (state, action) => {
+      builder.addCase(addComment.fulfilled, (state, action) => {
         const { heroId, comment } = action.payload;
 
         // Update current hero
@@ -451,7 +477,7 @@ const heroesSlice = createSlice({
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.currentUser = {
-          id: action.payload.id,
+          id: action.payload._id,
           name: action.payload.name,
           email: action.payload.email
         };
@@ -461,6 +487,20 @@ const heroesSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       })
+
+      // Fetch user thanks
+      .addCase(fetchUserThanks.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchUserThanks.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+         state.userThanks = action.payload
+        
+      })
+      .addCase(fetchUserThanks.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      });
   }
 });
 

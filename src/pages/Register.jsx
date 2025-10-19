@@ -9,11 +9,13 @@ import React from "react";
 import { Lock, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import { useState } from "react";
 
 const Register = () => {
  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = React.useState(null);
+ const [isSubminting, setIsSubmiting] = useState(false)
 
  
 
@@ -22,6 +24,7 @@ const Register = () => {
   });
 
   const onSubmit = async(data) => {
+    setIsSubmiting(true)
     try {
       const result = await dispatch(registerUser(data)).unwrap();
        localStorage.setItem("token", result.token);
@@ -34,6 +37,8 @@ const Register = () => {
       console.error("Login failed:", error);
       setError(error.error || "Registration failed");
       toast.error(error.error || "Registration failed");
+    }finally{
+      setIsSubmiting(false)
     }
   };
 
@@ -150,13 +155,13 @@ const Register = () => {
       
 
         
+        {/* Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r
-             from-orange-500 to-red-500 text-white py-2 
-             rounded-lg font-semibold hover:opacity-90 transition cursor-pointer"
-          >
-            Register
+            className={`w-full ${isSubminting ? "bg-gradient-to-r from-orange-100 to-red-200" : "bg-gradient-to-r from-orange-500 to-red-500" }
+             text-white py-2 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer"
+            `}>
+            {isSubminting? "Registering": "register"}
           </button>
         </form>
 

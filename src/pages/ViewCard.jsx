@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
-  fetchHeroById, 
-  thankHero, 
+  fetchHeroById,  
   addComment, 
   fetchHeroComments ,
   deleteComment
@@ -25,12 +24,11 @@ const ViewCard = () => {
   const { currentHero, status } = useSelector(state => state.heroes);
   const { user } = useSelector(state => state.auth);
   const [newComment, setNewComment] = useState('');
-  const [isThanking, setIsThanking] = useState(false);
 
 
-//  const isUser = currentHero?.comments?.map(comment => comment.user._id = user?._id) // Temporary fix for comment user ID;
+  
 
-//  console.log(isUser); // Temporary debug log
+
 
   useEffect(() => {
     if (id) {
@@ -40,6 +38,7 @@ const ViewCard = () => {
   }, [dispatch, id]);
 
   const handleDeleteComment = async (commentId) => {
+  
     if (user && currentHero) {
       if (window.confirm('Are you sure you want to delete this comment?')) {
         try {
@@ -51,18 +50,7 @@ const ViewCard = () => {
     }
   };
 
-  const handleThank = async () => {
-    if (user && currentHero && !currentHero.user_has_thanked) {
-      setIsThanking(true);
-      try {
-        await dispatch(thankHero(currentHero._id)).unwrap();
-      } catch (error) {
-        console.error('Thank failed:', error);
-      } finally {
-        setIsThanking(false);
-      }
-    }
-  };
+
 
   const handleAddComment = async (e) => {
     e.preventDefault();
@@ -79,15 +67,7 @@ const ViewCard = () => {
     }
   };
 
-//  const formatDate = (timestamp) => {
-//   // Hubi in timestamp uu integer noqdo
-//   const date = new Date(Math.floor(timestamp));
-//   return date.toLocaleDateString('en-US', {
-//     year: 'numeric',
-//     month: 'long',
-//     day: 'numeric',
-//   });
-// };
+
 
   if (status === 'loading') {
     return (
@@ -184,7 +164,7 @@ const ViewCard = () => {
               </div>
 
               {/* Thank Button */}
-              <button
+              {/* <button
                 onClick={handleThank}
                 disabled={!user || currentHero.user_has_thanked || isThanking}
                 className={`flex items-center space-x-2 px-6 py-3 rounded-full font-semibold transition-all ${
@@ -198,7 +178,7 @@ const ViewCard = () => {
                   {isThanking ? 'Thanking...' : 
                    currentHero.user_has_thanked ? 'Thanked!' : 'Thank Hero'}
                 </span>
-              </button>
+              </button> */}
             </div>
 
             {/* Story Section */}
@@ -316,7 +296,7 @@ const ViewCard = () => {
                         </div>
                         {user && comment.user?.id === user?._id && (
                           <button
-                            onClick={() => {handleDeleteComment(comment.user?.id)}}
+                            onClick={() => {handleDeleteComment(comment.id)}}
                             className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-6 h-6" />
